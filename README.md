@@ -1,13 +1,29 @@
-# FRED-SOL — Autonomous Solana Trading Agent
+# FRED-SOL 🤖
 
-Solana-native version of FRED for the Colosseum AI Agent Hackathon ($100K prize pool).
+**Autonomous Solana Trading Agent** — Kelly criterion position sizing meets LLM probability estimation.
 
-## What It Does
+Built for the [Solana AI Agent Hackathon](https://www.colosseum.org/agent-hackathon) (Feb 2-12, 2026).
 
-1. **Scans** Solana markets (Jupiter, Drift, Mango)
-2. **Estimates** probabilities using LLM reasoning
-3. **Sizes** positions using Kelly criterion
-4. **Executes** trades autonomously
+## What is FRED?
+
+FRED (Forecasting & Risk-Evaluated Decisions) is an autonomous trading agent that:
+
+1. **Scans markets** via Jupiter and Birdeye APIs
+2. **Estimates probabilities** using LLM inference
+3. **Sizes positions** using Kelly criterion (half-Kelly with confidence adjustment)
+4. **Executes trades** via Jupiter aggregator
+
+## Features
+
+| Feature | Description |
+|---------|-------------|
+| 🔍 Market Scanner | Real-time scanning via Jupiter/Birdeye |
+| 🧠 LLM Estimation | Probability estimation with confidence scoring |
+| 📊 Kelly Sizing | Mathematically optimal position sizing |
+| ⚡ Jupiter Execution | Best-price swaps via Jupiter aggregator |
+| 🎬 Demo Mode | Rich terminal UI for presentations |
+| 📈 Backtesting | Historical strategy validation |
+| 🖥️ Dashboard | Real-time web monitoring |
 
 ## Quick Start
 
@@ -15,50 +31,123 @@ Solana-native version of FRED for the Colosseum AI Agent Hackathon ($100K prize 
 # Install dependencies
 pip install -r requirements.txt
 
-# Set API key
-export ANTHROPIC_API_KEY=your_key
+# Run demo mode (no real trades)
+python main.py --demo
 
-# Run scanner demo
-python scanner.py
+# Run backtesting
+python main.py --backtest
 
-# Run full agent
-python agent.py
+# Start web dashboard
+python main.py --dashboard
+
+# Run live (requires funded wallet)
+python main.py --loop --interval 60
 ```
+
+## Demo Mode
+
+Perfect for presentations and video recording:
+
+```bash
+python main.py --demo
+```
+
+![Demo Screenshot](docs/demo.png)
+
+Features:
+- ASCII art logo
+- Colored panels and progress spinners
+- Simulated market scanning
+- Mock trade execution
+- Outputs to `demo_trades.json`
 
 ## Architecture
 
 ```
-┌─────────────────┐     ┌─────────────────┐
-│   LLM Inference │ ←── │  Market Scanner │
-│   (Claude API)  │     │  (Solana RPC)   │
-└────────┬────────┘     └─────────────────┘
-         │
-         ▼
-┌─────────────────┐     ┌─────────────────┐
-│ Position Sizer  │ ──► │ Trade Executor  │
-│ (Kelly/Optimal-f)│    │ (Anchor Client) │
-└─────────────────┘     └────────┬────────┘
-                                 │
-                                 ▼
-                        ┌─────────────────┐
-                        │  Solana Program │
-                        │  (On-chain)     │
-                        └─────────────────┘
+┌─────────────────────────────────────────────────────────┐
+│                      FRED-SOL                           │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  ┌──────────┐    ┌──────────┐    ┌──────────┐          │
+│  │ Scanner  │───▶│ Estimator│───▶│  Agent   │          │
+│  │ (Jupiter)│    │  (LLM)   │    │ (Kelly)  │          │
+│  └──────────┘    └──────────┘    └────┬─────┘          │
+│                                       │                 │
+│                                       ▼                 │
+│                               ┌──────────┐              │
+│                               │ Executor │              │
+│                               │(Jupiter) │              │
+│                               └──────────┘              │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Position Sizing (Kelly Criterion)
+
+FRED uses the Kelly criterion for mathematically optimal bet sizing:
+
+```
+f* = (bp - q) / b
+
+where:
+  f* = fraction of capital to bet
+  b  = odds received (payout ratio)
+  p  = probability of winning
+  q  = probability of losing (1-p)
+```
+
+We use half-Kelly with confidence adjustment for reduced variance:
+
+```python
+adjusted_size = kelly_fraction * confidence * 0.5
+```
+
+## Configuration
+
+Set environment variables:
+
+```bash
+export SOLANA_RPC_URL="https://api.mainnet-beta.solana.com"
+export ANTHROPIC_API_KEY="your-key"  # For LLM estimation
+export SOLANA_PRIVATE_KEY="your-key"  # For live trading
 ```
 
 ## Files
 
-- `scanner.py` — Market discovery (Jupiter, Drift)
-- `agent.py` — Main trading loop with LLM estimation
-- `requirements.txt` — Dependencies
+| File | Purpose |
+|------|---------|
+| `main.py` | Entry point with CLI flags |
+| `scanner.py` | Market scanner (Jupiter/Birdeye) |
+| `estimator.py` | LLM probability estimation |
+| `agent.py` | Trading logic with Kelly sizing |
+| `executor.py` | Jupiter swap execution |
+| `wallet.py` | Solana wallet operations |
+| `demo.py` | Demo mode with rich UI |
+| `backtest.py` | Backtesting engine |
+| `dashboard.py` | FastAPI web dashboard |
 
-## Hackathon
+## Backtesting Results
 
-- **Event:** Colosseum AI Agent Hackathon
-- **Prize:** $100,000 USDC
-- **Deadline:** February 12, 2026
+Sample backtest on 1 year of data:
 
-## Team
+```
+📊 FRED Backtesting Engine
+========================================
+Initial Capital: $1000.00
+Final Equity:    $1,247.32
+Total Return:    24.73%
+Max Drawdown:    8.2%
+Sharpe Ratio:    1.34
+Total Trades:    47
+Win Rate:        61.7%
+```
 
-- **Ricky** (@rickyautobots) — AI agent
-- **Derek** (@zatioj1989) — Human operator
+## License
+
+MIT
+
+## Links
+
+- [Solana AI Agent Hackathon](https://www.colosseum.org/agent-hackathon)
+- [Jupiter Aggregator](https://jup.ag)
+- [OpenClaw Framework](https://github.com/openclaw/openclaw)
