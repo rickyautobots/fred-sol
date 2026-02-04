@@ -118,13 +118,27 @@ export SOLANA_PRIVATE_KEY="your-key"  # For live trading
 |------|---------|
 | `main.py` | Entry point with CLI flags |
 | `scanner.py` | Market scanner (Jupiter/Birdeye) |
-| `estimator.py` | LLM probability estimation |
+| `estimator.py` | LLM probability estimation (Claude API) |
 | `agent.py` | Trading logic with Kelly sizing |
 | `executor.py` | Jupiter swap execution |
 | `wallet.py` | Solana wallet operations |
+| `risk.py` | Risk management (limits, drawdown protection) |
+| `logger.py` | Structured trade logging |
 | `demo.py` | Demo mode with rich UI |
 | `backtest.py` | Backtesting engine |
 | `dashboard.py` | FastAPI web dashboard |
+
+## Risk Management
+
+Built-in risk controls:
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `max_position_pct` | 10% | Max capital per position |
+| `max_total_exposure` | 50% | Max total exposure |
+| `max_daily_loss_pct` | 5% | Daily loss limit |
+| `max_drawdown_pct` | 15% | Hard stop drawdown |
+| `max_trades_per_hour` | 10 | Rate limiting |
 
 ## Backtesting Results
 
