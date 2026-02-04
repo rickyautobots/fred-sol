@@ -156,6 +156,7 @@ def main():
     parser.add_argument("--demo", action="store_true", help="Run in demo mode (simulated trading)")
     parser.add_argument("--backtest", action="store_true", help="Run backtesting engine")
     parser.add_argument("--dashboard", action="store_true", help="Run web dashboard on port 8080")
+    parser.add_argument("--api", action="store_true", help="Run REST API server on port 8000")
     parser.add_argument("--loop", action="store_true", help="Run continuous trading loop")
     parser.add_argument("--interval", type=int, default=60, help="Loop interval in seconds")
     args = parser.parse_args()
@@ -169,6 +170,9 @@ def main():
     elif args.dashboard:
         from dashboard import run_dashboard
         run_dashboard()
+    elif args.api:
+        from api import run_api
+        run_api()
     elif args.loop:
         agent = FredSol()
         asyncio.run(agent.run_loop(args.interval))
