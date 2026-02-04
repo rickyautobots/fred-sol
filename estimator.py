@@ -1,181 +1,159 @@
 #!/usr/bin/env python3
 """
-FRED-SOL: LLM Probability Estimator
+FRED Probability Estimator
 
-Uses Claude to estimate market probabilities.
+LLM-based probability estimation with confidence scoring.
+Uses Claude API for market analysis.
 """
 
 import os
 import json
 from dataclasses import dataclass
 from typing import Optional
-import httpx
+
+try:
+    import anthropic
+    HAS_ANTHROPIC = True
+except ImportError:
+    HAS_ANTHROPIC = False
 
 
 @dataclass
 class Estimate:
-    probability: float  # 0-1
-    confidence: float   # 0-1
-    direction: str      # 'long', 'short', 'neutral'
+    probability: float
+    confidence: float
     reasoning: str
-    edge: float         # vs market price
+    raw_response: Optional[str] = None
 
 
 class ProbabilityEstimator:
-    """LLM-based market analysis."""
+    """LLM-based probability estimation for trading decisions."""
     
     def __init__(self, api_key: Optional[str] = None):
         self.api_key = api_key or os.getenv("ANTHROPIC_API_KEY")
+        self.client = None
+        
+        if HAS_ANTHROPIC and self.api_key:
+            self.client = anthropic.Anthropic(api_key=self.api_key)
     
-    async def estimate(
-        self,
-        symbol: str,
-        current_price: float,
-        volume_24h: float,
-        context: str = ""
-    ) -> Estimate:
-        """Get probability estimate from Claude."""
+    def _heuristic_estimate(self, market_data: dict) -> Estimate:
+        """Fallback heuristic when LLM unavailable."""
+        volume = market_data.get("volume_24h", 0)
+        price_change = market_data.get("price_change_24h", 0)
         
-        prompt = f"""Analyze this Solana token for short-term trading:
-
-Symbol: {symbol}
-Current Price: ${current_price:.6f}
-24h Volume: ${volume_24h:,.0f}
-{f'Context: {context}' if context else ''}
-
-Provide trading analysis:
-1. Probability of 5%+ upside in next 24h (0.0-1.0)
-2. Your confidence in this estimate (0.0-1.0)  
-3. Recommended direction: long, short, or neutral
-4. Brief reasoning (1-2 sentences)
-
-Respond ONLY with valid JSON:
-{{"probability": 0.XX, "confidence": 0.XX, "direction": "long|short|neutral", "reasoning": "..."}}
-"""
+        # Simple momentum + mean reversion
+        if volume > 1_000_000:
+            base_prob = 0.50  # Efficient market
+            confidence = 0.3
+        elif volume > 100_000:
+            base_prob = 0.52
+            confidence = 0.5
+        else:
+            base_prob = 0.55
+            confidence = 0.6
         
-        try:
-            async with httpx.AsyncClient(timeout=60.0) as client:
-                resp = await client.post(
-                    "https://api.anthropic.com/v1/messages",
-                    headers={
-                        "x-api-key": self.api_key,
-                        "anthropic-version": "2023-06-01",
-                        "content-type": "application/json"
-                    },
-                    json={
-                        "model": "claude-3-haiku-20240307",
-                        "max_tokens": 200,
-                        "messages": [{"role": "user", "content": prompt}]
-                    }
-                )
-                
-                if resp.status_code == 200:
-                    content = resp.json()["content"][0]["text"]
-                    # Extract JSON
-                    start = content.find("{")
-                    end = content.rfind("}") + 1
-                    if start >= 0 and end > start:
-                        data = json.loads(content[start:end])
-                        
-                        # Calculate edge vs neutral assumption
-                        prob = data.get("probability", 0.5)
-                        edge = prob - 0.5  # Edge vs random
-                        
-                        return Estimate(
-                            probability=prob,
-                            confidence=data.get("confidence", 0.5),
-                            direction=data.get("direction", "neutral"),
-                            reasoning=data.get("reasoning", ""),
-                            edge=edge
-                        )
-        except Exception as e:
-            print(f"Estimation error: {e}")
+        # Adjust for momentum
+        if price_change > 10:
+            base_prob -= 0.03  # Mean reversion
+        elif price_change < -10:
+            base_prob += 0.03  # Oversold bounce
         
-        # Fallback
         return Estimate(
-            probability=0.5,
-            confidence=0.3,
-            direction="neutral",
-            reasoning="Unable to analyze - using neutral stance",
-            edge=0.0
+            probability=max(0.3, min(0.7, base_prob)),
+            confidence=confidence,
+            reasoning=f"Heuristic: vol=${volume:,.0f}, change={price_change:.1f}%"
         )
+    
+    async def estimate(self, market_data: dict) -> Estimate:
+        """Estimate probability using LLM or fallback to heuristics."""
+        
+        if not self.client:
+            return self._heuristic_estimate(market_data)
+        
+        prompt = f"""Analyze this market for short-term trading opportunity:
 
+Market: {market_data.get('symbol', 'Unknown')}
+Current Price: ${market_data.get('price', 0):.4f}
+24h Volume: ${market_data.get('volume_24h', 0):,.0f}
+24h Change: {market_data.get('price_change_24h', 0):.2f}%
+Market Cap: ${market_data.get('market_cap', 0):,.0f}
 
-class PositionSizer:
-    """Kelly criterion position sizing."""
-    
-    @staticmethod
-    def calculate(
-        probability: float,
-        confidence: float,
-        bankroll: float,
-        max_position_pct: float = 0.20
-    ) -> float:
-        """
-        Calculate position size using fractional Kelly.
-        
-        Returns position size in USD.
-        """
-        if probability <= 0.5 or confidence < 0.4:
-            return 0.0
-        
-        # Assume 2:1 odds for simplicity (can profit 100% or lose 100%)
-        odds = 2.0
-        
-        # Kelly formula
-        b = odds - 1  # Net odds
-        p = probability
-        q = 1 - p
-        
-        kelly = (b * p - q) / b
-        
-        # Apply confidence as fractional Kelly
-        # Also use half-Kelly for safety
-        fraction = kelly * confidence * 0.5
-        
-        # Cap at max position
-        fraction = max(0, min(fraction, max_position_pct))
-        
-        return bankroll * fraction
+Task: Estimate the probability that this asset will be higher in 4 hours.
 
+Respond in JSON format:
+{{
+    "probability": 0.XX,  // 0.0 to 1.0
+    "confidence": 0.XX,   // 0.0 to 1.0 (how confident in estimate)
+    "reasoning": "Brief explanation"
+}}
 
-async def demo():
-    print("🧠 FRED-SOL Estimator Demo")
-    print("=" * 40)
-    
-    estimator = ProbabilityEstimator()
-    sizer = PositionSizer()
-    
-    # Demo analysis
-    tokens = [
-        ("SOL", 95.50, 1_500_000_000),
-        ("BONK", 0.00001234, 50_000_000),
-        ("JTO", 2.85, 30_000_000),
-    ]
-    
-    bankroll = 1000.0  # $1000 USDC
-    
-    for symbol, price, volume in tokens:
-        print(f"\n📊 Analyzing {symbol}...")
-        
-        estimate = await estimator.estimate(symbol, price, volume)
-        
-        print(f"   Probability: {estimate.probability:.1%}")
-        print(f"   Confidence: {estimate.confidence:.1%}")
-        print(f"   Direction: {estimate.direction}")
-        print(f"   Edge: {estimate.edge:+.1%}")
-        print(f"   Reasoning: {estimate.reasoning}")
-        
-        if estimate.direction == "long" and estimate.edge > 0.05:
-            position = sizer.calculate(
-                estimate.probability,
-                estimate.confidence,
-                bankroll
+Consider:
+- Volume trends (higher = more efficient pricing)
+- Recent momentum (mean reversion vs trend following)
+- Market cap (smaller = more volatile)
+- Time of day effects
+
+Be calibrated - if uncertain, probability should be near 0.5 with low confidence."""
+
+        try:
+            response = self.client.messages.create(
+                model="claude-3-5-haiku-20241022",
+                max_tokens=500,
+                messages=[{"role": "user", "content": prompt}]
             )
-            if position > 0:
-                print(f"   💰 Position: ${position:.2f} ({position/bankroll:.1%} of bankroll)")
+            
+            text = response.content[0].text
+            
+            # Parse JSON from response
+            import re
+            json_match = re.search(r'\{[^}]+\}', text, re.DOTALL)
+            if json_match:
+                data = json.loads(json_match.group())
+                return Estimate(
+                    probability=float(data.get("probability", 0.5)),
+                    confidence=float(data.get("confidence", 0.5)),
+                    reasoning=data.get("reasoning", "LLM analysis"),
+                    raw_response=text
+                )
+        except Exception as e:
+            print(f"LLM estimation failed: {e}")
+        
+        return self._heuristic_estimate(market_data)
+    
+    def batch_estimate(self, markets: list) -> list:
+        """Estimate probabilities for multiple markets."""
+        import asyncio
+        
+        async def run_batch():
+            return [await self.estimate(m) for m in markets]
+        
+        return asyncio.run(run_batch())
+
+
+# Convenience function
+async def estimate_probability(market_data: dict, api_key: Optional[str] = None) -> Estimate:
+    """Quick estimation for a single market."""
+    estimator = ProbabilityEstimator(api_key)
+    return await estimator.estimate(market_data)
 
 
 if __name__ == "__main__":
+    # Test
     import asyncio
-    asyncio.run(demo())
+    
+    test_market = {
+        "symbol": "SOL/USDC",
+        "price": 96.42,
+        "volume_24h": 500_000,
+        "price_change_24h": -2.1,
+        "market_cap": 45_000_000_000
+    }
+    
+    async def test():
+        estimator = ProbabilityEstimator()
+        result = await estimator.estimate(test_market)
+        print(f"Probability: {result.probability:.2%}")
+        print(f"Confidence: {result.confidence:.2%}")
+        print(f"Reasoning: {result.reasoning}")
+    
+    asyncio.run(test())
