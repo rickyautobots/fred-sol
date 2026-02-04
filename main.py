@@ -157,12 +157,21 @@ class FredSol:
 
 
 def main():
-    agent = FredSol()
+    import argparse
+    parser = argparse.ArgumentParser(description="FRED-SOL: Autonomous Solana Trading Agent")
+    parser.add_argument("--dashboard", action="store_true", help="Run web dashboard on port 8080")
+    parser.add_argument("--loop", action="store_true", help="Run continuous trading loop")
+    parser.add_argument("--interval", type=int, default=60, help="Loop interval in seconds")
+    args = parser.parse_args()
     
-    if len(sys.argv) > 1 and sys.argv[1] == "loop":
-        interval = int(sys.argv[2]) if len(sys.argv) > 2 else 60
-        asyncio.run(agent.run_loop(interval))
+    if args.dashboard:
+        from dashboard import run_dashboard
+        run_dashboard()
+    elif args.loop:
+        agent = FredSol()
+        asyncio.run(agent.run_loop(args.interval))
     else:
+        agent = FredSol()
         asyncio.run(agent.run_once())
 
 
