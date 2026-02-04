@@ -46,12 +46,8 @@ class FredSol:
     
     async def estimate_probability(self, market: Market) -> dict:
         """LLM probability estimation (simplified for demo)."""
-        # In production, this calls Claude API
-        # For now, use simple heuristics
-        
         volume = market.volume_24h
         
-        # Higher volume = more efficient market = closer to 0.5
         if volume > 1_000_000:
             base_prob = 0.50
             confidence = 0.3
@@ -76,7 +72,6 @@ class FredSol:
         b = odds - 1
         f = (b * prob - (1 - prob)) / b
         
-        # Half-Kelly with confidence adjustment
         adjusted = f * confidence * 0.5
         
         return max(0, min(adjusted, self.max_position_pct))
@@ -94,8 +89,7 @@ class FredSol:
         for market in markets:
             estimate = await self.estimate_probability(market)
             
-            # Calculate edge (simplified)
-            market_prob = 0.5  # Assume 50/50 for spot markets
+            market_prob = 0.5
             our_prob = estimate["probability"]
             edge = abs(our_prob - market_prob)
             
@@ -115,7 +109,7 @@ class FredSol:
         
         print(f"\n📊 {len(opportunities)} opportunities found:")
         
-        for opp in opportunities[:3]:  # Top 3
+        for opp in opportunities[:3]:
             m = opp["market"]
             print(f"\n   [{m.source}] {m.question}")
             print(f"   Edge: {opp['edge']:.1%} | Size: {opp['size']:.1%}")
@@ -160,14 +154,21 @@ def main():
     import argparse
     parser = argparse.ArgumentParser(description="FRED-SOL: Autonomous Solana Trading Agent")
     parser.add_argument("--demo", action="store_true", help="Run in demo mode (simulated trading)")
+    parser.add_argument("--backtest", action="store_true", help="Run backtesting engine")
+    parser.add_argument("--dashboard", action="store_true", help="Run web dashboard on port 8080")
     parser.add_argument("--loop", action="store_true", help="Run continuous trading loop")
     parser.add_argument("--interval", type=int, default=60, help="Loop interval in seconds")
     args = parser.parse_args()
     
     if args.demo:
-        # Run demo mode
         from demo import run_demo
         asyncio.run(run_demo())
+    elif args.backtest:
+        from backtest import main as backtest_main
+        backtest_main()
+    elif args.dashboard:
+        from dashboard import run_dashboard
+        run_dashboard()
     elif args.loop:
         agent = FredSol()
         asyncio.run(agent.run_loop(args.interval))
