@@ -1,0 +1,42 @@
+# Secrets - NEVER commit
+.env
+.env.*
+*.env
+*.key
+*.pem
+**/secrets/
+**/credentials/
+**/*secret*
+**/*wallet*.json
+**/*keypair*.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+*.so
+.eggs/
+*.egg-info/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local data
+*.log
+data/*.json
+!data/.gitkeep
