@@ -4,6 +4,28 @@
 
 Built for the [Solana AI Agent Hackathon](https://www.colosseum.org/agent-hackathon) (Feb 2-12, 2026).
 
+---
+
+## 🚀 Quick Demo (30 seconds)
+
+```bash
+# Clone and run
+git clone https://github.com/rickyautobots/fred-sol.git
+cd fred-sol
+pip install streamlit pandas numpy
+streamlit run streamlit_app.py
+```
+
+**That's it!** Browser opens with interactive demo.
+
+Or try the terminal demo:
+```bash
+pip install rich
+python demo.py
+```
+
+---
+
 ## What is FRED?
 
 FRED (Forecasting & Risk-Evaluated Decisions) is an autonomous trading agent that:
