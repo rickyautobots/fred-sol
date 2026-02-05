@@ -40,6 +40,14 @@ class RiskConfig:
     max_trades_per_hour: int = 10        # Rate limit
 
 
+@dataclass
+class TradingLimits:
+    """Trading rate and timing limits."""
+    max_trades_per_hour: int = 10
+    min_trade_interval_sec: int = 60
+    cooldown_after_loss_sec: int = 300
+
+
 class RiskManager:
     """Manages trading risk and position limits."""
     
@@ -55,8 +63,70 @@ class RiskManager:
         self.trades_this_hour: int = 0
         self.hour_start: datetime = datetime.now()
     
+    # Compatibility properties for tests
     @property
+    def capital(self) -> float:
+        """Alias for current_capital (test compatibility)."""
+        return self.current_capital
+    
+    @capital.setter
+    def capital(self, value: float):
+        self.current_capital = value
+    
+    @property
+    def high_water_mark(self) -> float:
+        """Alias for peak_capital (test compatibility)."""
+        return self.peak_capital
+    
+    @high_water_mark.setter
+    def high_water_mark(self, value: float):
+        self.peak_capital = value
+    
+    def max_position_size(self) -> float:
+        """Get max position size in USD."""
+        return self.current_capital * self.config.max_position_pct
+    
+    def check_trade_allowed(self, size_usd: float, symbol: str) -> tuple[bool, str]:
+        """Check if trade is allowed (test compatibility wrapper for can_trade)."""
+        return self.can_trade(symbol, size_usd)
+    
+    def record_trade_result(self, symbol: str, pnl: float):
+        """Record a trade result (simplified for tests)."""
+        self.daily_pnl += pnl
+        self.current_capital += pnl
+        self.trade_history.append({
+            "time": datetime.now().isoformat(),
+            "action": "RESULT",
+            "symbol": symbol,
+            "pnl": pnl
+        })
+    
+    def update_high_water_mark(self):
+        """Update high water mark to current capital if higher."""
+        self.peak_capital = max(self.peak_capital, self.current_capital)
+    
+    def add_position(self, symbol: str, size_usd: float):
+        """Add a position (simplified for tests)."""
+        self.positions[symbol] = Position(
+            symbol=symbol,
+            size=size_usd,
+            entry_price=1.0,  # Placeholder
+            entry_time=datetime.now(),
+            current_price=1.0
+        )
+    
     def total_exposure(self) -> float:
+        """Current total exposure in USD (method version for tests)."""
+        return sum(p.size for p in self.positions.values())
+    
+    def check_drawdown(self) -> tuple[bool, str]:
+        """Check if drawdown is within limits."""
+        if self.current_drawdown > self.config.max_drawdown_pct:
+            return False, f"Max drawdown exceeded: {self.current_drawdown:.1%}"
+        return True, "OK"
+    
+    @property
+    def _total_exposure_pct(self) -> float:
         """Current total exposure as fraction of capital."""
         total = sum(p.size for p in self.positions.values())
         return total / self.current_capital if self.current_capital > 0 else 0
@@ -92,7 +162,7 @@ class RiskManager:
             return False, f"Position too large: {position_pct:.1%} > {self.config.max_position_pct:.1%}"
         
         # Total exposure limit
-        new_exposure = self.total_exposure + position_pct
+        new_exposure = self._total_exposure_pct + position_pct
         if new_exposure > self.config.max_total_exposure:
             return False, f"Exposure limit: {new_exposure:.1%} > {self.config.max_total_exposure:.1%}"
         
@@ -173,7 +243,7 @@ class RiskManager:
             "pnl_total": self.current_capital - self.initial_capital,
             "pnl_pct": (self.current_capital - self.initial_capital) / self.initial_capital,
             "daily_pnl": self.daily_pnl,
-            "exposure": self.total_exposure,
+            "exposure": self._total_exposure_pct,
             "drawdown": self.current_drawdown,
             "positions": len(self.positions),
             "trades_today": len([t for t in self.trade_history 

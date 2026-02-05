@@ -24,6 +24,11 @@ class Estimate:
     confidence: float
     reasoning: str
     raw_response: Optional[str] = None
+    factors: Optional[dict] = None
+
+
+# Alias for backward compatibility with tests
+EstimationResult = Estimate
 
 
 class ProbabilityEstimator:
