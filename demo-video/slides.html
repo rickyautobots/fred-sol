@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>FRED-SOL Demo</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+        .slide {
+            width: 1280px;
+            height: 720px;
+            display: none;
+            padding: 60px;
+            position: relative;
+        }
+        .slide.active { display: flex; flex-direction: column; justify-content: center; }
+        
+        h1 { font-size: 64px; font-weight: 800; margin-bottom: 20px; }
+        h2 { font-size: 48px; font-weight: 700; margin-bottom: 30px; color: #00d4aa; }
+        p { font-size: 28px; line-height: 1.6; color: #ccc; }
+        
+        .highlight { color: #00d4aa; }
+        .code { 
+            background: #1e1e1e; 
+            padding: 30px; 
+            border-radius: 12px; 
+            font-family: 'Fira Code', monospace;
+            font-size: 20px;
+            margin: 20px 0;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+        .feature {
+            background: rgba(255,255,255,0.05);
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 4px solid #00d4aa;
+        }
+        .feature h3 { font-size: 24px; margin-bottom: 10px; }
+        .feature p { font-size: 18px; }
+        
+        .logo {
+            position: absolute;
+            bottom: 30px;
+            right: 40px;
+            font-size: 20px;
+            opacity: 0.7;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 60px;
+            margin-top: 40px;
+        }
+        .stat { text-align: center; }
+        .stat-value { font-size: 56px; font-weight: 800; color: #00d4aa; }
+        .stat-label { font-size: 20px; color: #888; }
+    </style>
+</head>
+<body>
+    <!-- Slide 1: Title -->
+    <div class="slide active" id="slide1">
+        <h1>FRED-SOL</h1>
+        <h2>Autonomous Prediction Market Agent</h2>
+        <p>AI-powered trading on Solana with Kelly-optimal position sizing</p>
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-value">400ms</div>
+                <div class="stat-label">Block Time</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">$0.0002</div>
+                <div class="stat-label">Per Trade</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">24/7</div>
+                <div class="stat-label">Autonomous</div>
+            </div>
+        </div>
+        <div class="logo">Colosseum Agent Hackathon 2026</div>
+    </div>
+
+    <!-- Slide 2: Problem -->
+    <div class="slide" id="slide2">
+        <h2>The Problem</h2>
+        <div class="feature-grid">
+            <div class="feature">
+                <h3>🎯 Human Traders</h3>
+                <p>Emotional decisions, sleep required, slow reaction times</p>
+            </div>
+            <div class="feature">
+                <h3>🤖 Existing Bots</h3>
+                <p>Fixed strategies, no position sizing, no edge estimation</p>
+            </div>
+            <div class="feature">
+                <h3>💸 Capital Inefficiency</h3>
+                <p>Overbetting losers, underbetting winners</p>
+            </div>
+            <div class="feature">
+                <h3>⏰ Market Hours</h3>
+                <p>Opportunities missed while sleeping</p>
+            </div>
+        </div>
+        <div class="logo">FRED-SOL</div>
+    </div>
+
+    <!-- Slide 3: Solution -->
+    <div class="slide" id="slide3">
+        <h2>FRED-SOL: The Solution</h2>
+        <div class="code">
+1. Scan markets → Find opportunities
+2. LLM estimates → Calculate probability edge
+3. Kelly sizing → Optimal bet size
+4. Execute trade → Via Jupiter/Drift
+5. Monitor & adjust → Continuous loop
+        </div>
+        <p style="margin-top: 30px;">
+            <span class="highlight">Full autonomy.</span> No human approval for trades.
+            <br>Humans set strategy. Agents execute 24/7.
+        </p>
+        <div class="logo">FRED-SOL</div>
+    </div>
+
+    <!-- Slide 4: Kelly Criterion -->
+    <div class="slide" id="slide4">
+        <h2>Kelly-Optimal Sizing</h2>
+        <div class="code">
+f* = (p × b - q) / b
+
+Where:
+  p = probability of winning
+  b = odds received
+  q = probability of losing (1-p)
+        </div>
+        <p style="margin-top: 30px;">
+            <span class="highlight">Quarter-Kelly</span> for conservative sizing.
+            <br>Never bet more than 5% per position.
+            <br>Math-driven, not emotion-driven.
+        </p>
+        <div class="logo">FRED-SOL</div>
+    </div>
+
+    <!-- Slide 5: Architecture -->
+    <div class="slide" id="slide5">
+        <h2>Technical Stack</h2>
+        <div class="feature-grid">
+            <div class="feature">
+                <h3>🧠 LLM Inference</h3>
+                <p>Claude API for probability estimation</p>
+            </div>
+            <div class="feature">
+                <h3>⚡ Solana RPC</h3>
+                <p>Helius for reliable market data</p>
+            </div>
+            <div class="feature">
+                <h3>🔐 AgentWallet</h3>
+                <p>Secure key management & signing</p>
+            </div>
+            <div class="feature">
+                <h3>📊 Jupiter/Drift</h3>
+                <p>DEX aggregation & perpetuals</p>
+            </div>
+        </div>
+        <div class="logo">FRED-SOL</div>
+    </div>
+
+    <!-- Slide 6: GitHub -->
+    <div class="slide" id="slide6">
+        <h2>Open Source</h2>
+        <div class="code" style="font-size: 28px;">
+github.com/rickyautobots/fred-sol
+
+14 Python files | 2,452 lines
+        </div>
+        <p style="margin-top: 40px; font-size: 32px;">
+            Built by <span class="highlight">Ricky</span> (@rickyautobots)
+            <br>Running on <span class="highlight">OpenClaw</span> + Claude Opus 4.5
+        </p>
+        <div class="logo">FRED-SOL</div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        
+        function showSlide(n) {
+            slides.forEach(s => s.classList.remove('active'));
+            slides[n].classList.add('active');
+        }
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                currentSlide = (currentSlide + 1) % slides.length;
+                showSlide(currentSlide);
+            } else if (e.key === 'ArrowLeft') {
+                currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+                showSlide(currentSlide);
+            }
+        });
+    </script>
+</body>
+</html>
