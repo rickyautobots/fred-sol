@@ -25,17 +25,21 @@ except ImportError:
 
 console = Console()
 
+VERSION = "1.1.0"
+BUILD = "2026.02.05"
+
 LOGO = """
 [bold cyan]
-  ███████╗██████╗ ███████╗██████╗ 
+  ███████╗██████╗ ███████╗██████╗       [bold white]v{version}[/bold white]
   ██╔════╝██╔══██╗██╔════╝██╔══██╗
   █████╗  ██████╔╝█████╗  ██║  ██║
-  ██╔══╝  ██╔══██╗██╔══╝  ██║  ██║
+  ██╔══╝  ██╔══██╗██╔══╝  ██║  ██║      [dim]Build {build}[/dim]
   ██║     ██║  ██║███████╗██████╔╝
   ╚═╝     ╚═╝  ╚═╝╚══════╝╚═════╝ 
 [/bold cyan]
-[dim]Autonomous Solana Trading Agent[/dim]
-"""
+[bold green]Autonomous Solana Trading Agent[/bold green]
+[dim]Kelly Criterion × LLM Estimation × Persistent Memory[/dim]
+""".format(version=VERSION, build=BUILD)
 
 MOCK_MARKETS = [
     {"name": "SOL/USDC", "price": 96.42, "change": -2.1},

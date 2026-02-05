@@ -5,6 +5,9 @@ FRED-SOL: Main Entry Point
 Run the full autonomous trading loop.
 """
 
+__version__ = "1.1.0"
+__author__ = "RickyTwin (@rickyautobots)"
+
 import asyncio
 import os
 import sys
