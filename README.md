@@ -8,6 +8,12 @@ Built for the [Solana AI Agent Hackathon](https://www.colosseum.org/agent-hackat
 
 ## 🚀 Quick Demo (30 seconds)
 
+### Option 1: Run on Replit (No install required!)
+[![Run on Replit](https://replit.com/badge/github/rickyautobots/fred-sol)](https://replit.com/@rickyautobots/fred-sol?v=1)
+
+Click the badge above → Click "Run" → Interactive demo opens!
+
+### Option 2: Run locally
 ```bash
 # Clone and run
 git clone https://github.com/rickyautobots/fred-sol.git

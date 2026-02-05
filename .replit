@@ -1,0 +1,14 @@
+run = "pip install -q streamlit pandas numpy rich && streamlit run streamlit_app.py --server.headless true --server.port 5000"
+
+[nix]
+channel = "stable-24_05"
+
+[deployment]
+run = ["sh", "-c", "pip install -q streamlit pandas numpy rich && streamlit run streamlit_app.py --server.headless true --server.port 5000"]
+
+[[ports]]
+localPort = 5000
+externalPort = 80
+
+[env]
+PYTHONUNBUFFERED = "1"
