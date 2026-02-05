@@ -7,7 +7,6 @@ Supports Telegram and console output.
 """
 
 import os
-import json
 from datetime import datetime
 from typing import Optional
 from dataclasses import dataclass

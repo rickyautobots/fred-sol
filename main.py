@@ -9,8 +9,6 @@ __version__ = "1.1.0"
 __author__ = "RickyTwin (@rickyautobots)"
 
 import asyncio
-import os
-import sys
 from datetime import datetime
 
 from scanner import SolanaScanner, Market

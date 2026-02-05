@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Tests for FRED-SOL EverMind memory integration."""
 
-import pytest
 from memory_evermind import (
     TradeMemory,
     EverMindMemory,

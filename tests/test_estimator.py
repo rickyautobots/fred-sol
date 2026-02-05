@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Tests for FRED-SOL probability estimator."""
 
-import pytest
 import os
 from estimator import ProbabilityEstimator, EstimationResult
 

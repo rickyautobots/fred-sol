@@ -122,7 +122,7 @@ class JupiterExecutor:
         
         # Sign transaction
         try:
-            signature = sign_callback(tx_bytes)
+            _signature = sign_callback(tx_bytes)
             # Would send to RPC here
             return SwapResult(True, "simulated_tx_sig", None)
         except Exception as e:

@@ -6,7 +6,6 @@ Structured logging for trades, decisions, and performance tracking.
 """
 
 import json
-import os
 from datetime import datetime
 from pathlib import Path
 from typing import Optional, Dict, Any
@@ -90,14 +89,14 @@ class TradeLogger:
         """Save logs to file."""
         path = self.log_dir / f"session_{self.session_id}.json"
         with open(path, "w") as f:
-            json.dump([l.to_dict() for l in self.logs], f, indent=2)
+            json.dump([entry.to_dict() for entry in self.logs], f, indent=2)
         return path
     
     def get_summary(self) -> dict:
         """Get session summary."""
-        trades = [l for l in self.logs if l.action == "EXECUTE"]
-        skips = [l for l in self.logs if l.action == "SKIP"]
-        errors = [l for l in self.logs if l.action == "ERROR"]
+        trades = [entry for entry in self.logs if entry.action == "EXECUTE"]
+        skips = [entry for entry in self.logs if entry.action == "SKIP"]
+        errors = [entry for entry in self.logs if entry.action == "ERROR"]
         
         return {
             "session_id": self.session_id,
@@ -105,7 +104,7 @@ class TradeLogger:
             "trades_executed": len(trades),
             "trades_skipped": len(skips),
             "errors": len(errors),
-            "symbols_traded": list(set(l.symbol for l in trades if l.symbol))
+            "symbols_traded": list(set(entry.symbol for entry in trades if entry.symbol))
         }
 
 

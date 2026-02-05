@@ -5,7 +5,7 @@ FRED-SOL: Solana Market Scanner
 
 import asyncio
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import List
 import httpx
 
 

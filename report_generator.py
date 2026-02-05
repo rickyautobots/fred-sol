@@ -9,7 +9,7 @@ No external dependencies required (uses vanilla HTML/CSS/JS).
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import Dict, Any
 
 
 def generate_html_report(

@@ -8,7 +8,6 @@ Handles keypair management and transaction signing.
 import os
 import json
 import base58
-from pathlib import Path
 from typing import Optional
 from dataclasses import dataclass
 
@@ -43,7 +42,6 @@ class SolanaWallet:
                 secret = bytes(data[:32])
                 self._keypair = data
                 # Derive public key (first 32 bytes of ed25519 keypair are private)
-                from hashlib import sha512
                 import nacl.signing
                 signing_key = nacl.signing.SigningKey(secret)
                 self._address = base58.b58encode(

@@ -9,7 +9,6 @@ For EverMind Memory Genesis Competition 2026.
 """
 
 import os
-import json
 from datetime import datetime
 from typing import Optional, List, Dict, Any
 from dataclasses import dataclass
@@ -148,7 +147,7 @@ class EverMindMemory:
         
         wins = 0
         losses = 0
-        total_pnl = 0.0
+        _total_pnl = 0.0
         
         for mem in memories:
             content = str(mem)

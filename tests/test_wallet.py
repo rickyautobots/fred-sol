@@ -11,7 +11,6 @@ Tests cover:
 """
 
 import pytest
-import json
 import tempfile
 from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -168,7 +167,7 @@ class TestSolanaWallet:
         try:
             wallet.sign_transaction(b"test_tx_bytes")
             assert False, "Should have raised an exception"
-        except:
+        except Exception:
             pass  # Expected to fail
 
 

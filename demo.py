@@ -12,7 +12,6 @@ try:
     from rich.panel import Panel
     from rich.progress import Progress, SpinnerColumn, TextColumn
     from rich.table import Table
-    from rich.text import Text
 except ImportError:
     print("Installing rich...")
     import subprocess
@@ -21,7 +20,6 @@ except ImportError:
     from rich.panel import Panel
     from rich.progress import Progress, SpinnerColumn, TextColumn
     from rich.table import Table
-    from rich.text import Text
 
 console = Console()
 
@@ -97,7 +95,7 @@ async def estimate_probability(market):
         TextColumn("[progress.description]{task.description}"),
         console=console
     ) as progress:
-        task = progress.add_task("Running LLM inference...", total=None)
+        _task = progress.add_task("Running LLM inference...", total=None)  # noqa: F841
         await asyncio.sleep(1.5)
     
     prob = round(random.uniform(0.45, 0.75), 2)

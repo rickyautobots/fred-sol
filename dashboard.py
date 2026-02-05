@@ -1,11 +1,8 @@
 #!/usr/bin/env python3
 """FRED Web Dashboard - FastAPI backend"""
 
-import json
-from pathlib import Path
 from datetime import datetime
 from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 import uvicorn
 

@@ -5,13 +5,12 @@ FRED API Server
 REST API for external integrations.
 """
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from pydantic import BaseModel
-from typing import Optional, List
-import asyncio
+from typing import List
 
-from estimator import ProbabilityEstimator, Estimate
-from risk import RiskManager, RiskConfig
+from estimator import ProbabilityEstimator
+from risk import RiskManager
 
 app = FastAPI(
     title="FRED API",

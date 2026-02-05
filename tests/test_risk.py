@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Tests for FRED-SOL risk management."""
 
-import pytest
 from risk import RiskManager, RiskConfig, TradingLimits
 
 
