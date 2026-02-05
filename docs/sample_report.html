@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FRED-SOL Backtest Report</title>
+    <style>
+        :root {
+            --bg: #0a0a0f;
+            --card-bg: #1a1a2e;
+            --text: #e0e0e0;
+            --text-muted: #888;
+            --accent: #00ff88;
+            --red: #ff4444;
+            --green: #00ff88;
+            --border: #333;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding: 40px;
+            line-height: 1.6;
+        }
+        
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        h1 {
+            color: var(--accent);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border);
+        }
+        
+        .card h3 {
+            color: var(--text-muted);
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .card .value {
+            font-size: 28px;
+            font-weight: bold;
+        }
+        
+        .positive { color: var(--green); }
+        .negative { color: var(--red); }
+        
+        .chart-container {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            margin-bottom: 30px;
+        }
+        
+        .chart {
+            height: 300px;
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            padding-top: 20px;
+        }
+        
+        .chart-bar {
+            flex: 1;
+            background: linear-gradient(180deg, var(--accent) 0%, transparent 100%);
+            border-radius: 2px 2px 0 0;
+            min-width: 4px;
+            transition: opacity 0.2s;
+        }
+        
+        .chart-bar:hover { opacity: 0.8; }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        th {
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+        
+        tr:hover { background: rgba(255,255,255,0.02); }
+        
+        .footer {
+            text-align: center;
+            color: var(--text-muted);
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .badge-buy {
+            background: rgba(0,255,136,0.1);
+            color: var(--green);
+        }
+        
+        .badge-sell {
+            background: rgba(255,68,68,0.1);
+            color: var(--red);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 FRED-SOL Backtest Report</h1>
+        <p class="subtitle">Generated February 04, 2026 at 23:07</p>
+        
+        <div class="grid">
+            <div class="card">
+                <h3>Initial Capital</h3>
+                <div class="value">$1000.00</div>
+            </div>
+            <div class="card">
+                <h3>Final Equity</h3>
+                <div class="value positive">$1038.49</div>
+            </div>
+            <div class="card">
+                <h3>Total Return</h3>
+                <div class="value positive">3.8%</div>
+            </div>
+            <div class="card">
+                <h3>Max Drawdown</h3>
+                <div class="value negative">7.9%</div>
+            </div>
+            <div class="card">
+                <h3>Win Rate</h3>
+                <div class="value">54.0%</div>
+            </div>
+            <div class="card">
+                <h3>Total Trades</h3>
+                <div class="value">50</div>
+            </div>
+            <div class="card">
+                <h3>Avg Win</h3>
+                <div class="value positive">$10.97</div>
+            </div>
+            <div class="card">
+                <h3>Avg Loss</h3>
+                <div class="value negative">$11.21</div>
+            </div>
+        </div>
+        
+        <div class="chart-container">
+            <h3 style="color: var(--text-muted); margin-bottom: 15px; font-size: 14px;">📈 Equity Curve</h3>
+            <div class="chart" id="equity-chart"></div>
+        </div>
+        
+        <div class="card">
+            <h3 style="margin-bottom: 15px;">📜 Trade History</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Side</th>
+                        <th>Price</th>
+                        <th>Size</th>
+                        <th>P&L</th>
+                    </tr>
+                </thead>
+                <tbody id="trades-table">
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="footer">
+            <p><strong>FRED-SOL</strong> — Autonomous Solana Trading Agent</p>
+            <p>Built for Solana AI Agent Hackathon 2026</p>
+            <p><a href="https://github.com/rickyautobots/fred-sol" style="color: var(--accent);">github.com/rickyautobots/fred-sol</a></p>
+        </div>
+    </div>
+    
+    <script>
+        // Equity curve data
+        const equityCurve = [1000.0, 1018.6298279996143, 1010.3310557124082, 1005.7595320454026, 1019.1642460181887, 1016.0702400800537, 1024.889964363014, 1039.2243288012894, 1057.4023804736103, 1054.5748393065223, 1037.0979683527366, 1054.8369458204454, 1039.5692183782935, 1027.7224355184617, 1027.7786832644638, 1014.2717531409149, 1035.8058320002137, 1017.177635335173, 1021.4006035739562, 1005.6223863726594, 985.7224953193731, 1002.0691526236543, 1024.614079929501, 1023.7229414890531, 1010.40987525999, 998.1727803141848, 1021.6023392590703, 1012.030686536474, 995.2102318281536, 990.1570493636816, 974.3018117068926, 991.7779636814453, 987.4389346494651, 994.2418665599363, 996.7712115390337, 997.739688228855, 1023.8032649664509, 1027.305649364497, 1026.1380885419176, 1026.4655127344286, 1029.8017130313624, 1038.0999444233903, 1039.1904361198567, 1020.5911376662658, 1006.3954146846479, 1011.8726946735084, 1018.3985641069573, 1019.4712502426818, 1037.366416216797, 1053.0811640518455, 1038.4894925306792];
+        
+        // Trades data
+        const trades = [{"timestamp": "2026-02-01 00:00", "side": "SELL", "price": 93.70981468638232, "size": 1.9825233115015388, "pnl": 18.629827999614363}, {"timestamp": "2026-02-01 01:00", "side": "SELL", "price": 106.43601334417082, "size": 1.9290649485770746, "pnl": -8.298772287206129}, {"timestamp": "2026-02-01 02:00", "side": "SELL", "price": 91.71083949173881, "size": 0.6229849872986016, "pnl": -4.571523667005593}, {"timestamp": "2026-02-01 03:00", "side": "SELL", "price": 103.16753207573228, "size": 1.950162946912618, "pnl": 13.404713972786084}, {"timestamp": "2026-02-01 04:00", "side": "BUY", "price": 93.5844695565096, "size": 1.499164135948277, "pnl": -3.094005938134984}, {"timestamp": "2026-02-01 05:00", "side": "BUY", "price": 98.64365330014122, "size": 1.0074590989861922, "pnl": 8.819724282960308}, {"timestamp": "2026-02-01 06:00", "side": "SELL", "price": 100.42062401804344, "size": 0.6012930688254932, "pnl": 14.334364438275365}, {"timestamp": "2026-02-01 07:00", "side": "SELL", "price": 95.95009780356875, "size": 0.3834773535013968, "pnl": 18.17805167232082}, {"timestamp": "2026-02-01 08:00", "side": "BUY", "price": 93.75422294868254, "size": 0.6600870957223888, "pnl": -2.827541167087986}, {"timestamp": "2026-02-01 09:00", "side": "SELL", "price": 102.93605826958272, "size": 1.7208566417672941, "pnl": -17.476870953785593}, {"timestamp": "2026-02-02 10:00", "side": "SELL", "price": 101.2194905734328, "size": 1.7455999543971232, "pnl": 17.73897746770873}, {"timestamp": "2026-02-02 11:00", "side": "BUY", "price": 90.65620268497892, "size": 1.4004085974012905, "pnl": -15.267727442151902}, {"timestamp": "2026-02-02 12:00", "side": "BUY", "price": 101.09593529066491, "size": 0.7624585381906165, "pnl": -11.846782859831782}, {"timestamp": "2026-02-02 13:00", "side": "BUY", "price": 108.58927838201515, "size": 0.5435926606383429, "pnl": 0.05624774600204674}, {"timestamp": "2026-02-02 14:00", "side": "SELL", "price": 109.28552480760933, "size": 0.20436444611219207, "pnl": -13.506930123548837}, {"timestamp": "2026-02-02 15:00", "side": "SELL", "price": 98.43015831504357, "size": 1.3610611072114311, "pnl": 21.534078859298752}, {"timestamp": "2026-02-02 16:00", "side": "SELL", "price": 101.26974929417528, "size": 1.4211774179631957, "pnl": -18.6281966650407}, {"timestamp": "2026-02-02 17:00", "side": "BUY", "price": 101.4128907681245, "size": 0.7457096126538808, "pnl": 4.222968238783167}, {"timestamp": "2026-02-02 18:00", "side": "BUY", "price": 107.05734601650994, "size": 1.9765596456163321, "pnl": -15.778217201296767}, {"timestamp": "2026-02-02 19:00", "side": "BUY", "price": 94.37734220980253, "size": 0.2617289692303516, "pnl": -19.89989105328624}, {"timestamp": "2026-02-03 20:00", "side": "BUY", "price": 103.20827918150371, "size": 1.9427088320774692, "pnl": 16.346657304281216}, {"timestamp": "2026-02-03 21:00", "side": "BUY", "price": 93.95427689129286, "size": 0.49659188085787975, "pnl": 22.544927305846677}, {"timestamp": "2026-02-03 22:00", "side": "BUY", "price": 101.3988212281601, "size": 1.5923617621371984, "pnl": -0.8911384404478611}, {"timestamp": "2026-02-03 23:00", "side": "BUY", "price": 104.80013871431089, "size": 0.8707032724168127, "pnl": -13.313066229063079}, {"timestamp": "2026-02-03 00:00", "side": "SELL", "price": 97.5863390831211, "size": 1.8233901824079928, "pnl": -12.237094945805236}, {"timestamp": "2026-02-03 01:00", "side": "BUY", "price": 100.41060965711623, "size": 1.2467109306943909, "pnl": 23.429558944885486}, {"timestamp": "2026-02-03 02:00", "side": "BUY", "price": 105.98768064420882, "size": 0.7727834696071868, "pnl": -9.571652722596252}, {"timestamp": "2026-02-03 03:00", "side": "SELL", "price": 104.99587488803108, "size": 0.1610986209062281, "pnl": -16.82045470832043}, {"timestamp": "2026-02-03 04:00", "side": "BUY", "price": 106.01991816234872, "size": 1.3538690484729765, "pnl": -5.053182464471966}, {"timestamp": "2026-02-03 05:00", "side": "SELL", "price": 92.06116140375914, "size": 0.7888948168417566, "pnl": -15.855237656789022}, {"timestamp": "2026-02-04 06:00", "side": "BUY", "price": 93.30419714012145, "size": 0.3720246604495345, "pnl": 17.476151974552593}, {"timestamp": "2026-02-04 07:00", "side": "BUY", "price": 102.4987648566548, "size": 1.4374254938275406, "pnl": -4.339029031980155}, {"timestamp": "2026-02-04 08:00", "side": "SELL", "price": 103.89834105208797, "size": 1.7822959523515398, "pnl": 6.80293191047123}, {"timestamp": "2026-02-04 09:00", "side": "BUY", "price": 96.23246753291346, "size": 1.5827859811006264, "pnl": 2.5293449790975053}, {"timestamp": "2026-02-04 10:00", "side": "SELL", "price": 101.18643088127546, "size": 0.5636568044825547, "pnl": 0.9684766898212374}, {"timestamp": "2026-02-04 11:00", "side": "BUY", "price": 108.795832340702, "size": 1.5564571725844851, "pnl": 26.063576737595874}, {"timestamp": "2026-02-04 12:00", "side": "BUY", "price": 106.01779520006136, "size": 1.9772610503525212, "pnl": 3.5023843980460825}, {"timestamp": "2026-02-04 13:00", "side": "BUY", "price": 103.5474050812274, "size": 1.6747689231910992, "pnl": -1.1675608225792935}, {"timestamp": "2026-02-04 14:00", "side": "BUY", "price": 92.85446845845675, "size": 0.509221482580949, "pnl": 0.32742419251091803}, {"timestamp": "2026-02-04 15:00", "side": "SELL", "price": 94.72274880087353, "size": 0.8797278355718015, "pnl": 3.3362002969338675}, {"timestamp": "2026-02-05 16:00", "side": "BUY", "price": 101.46031444457752, "size": 0.18077791584799804, "pnl": 8.298231392027933}, {"timestamp": "2026-02-05 17:00", "side": "BUY", "price": 107.64464956765727, "size": 0.4641785138004718, "pnl": 1.0904916964663904}, {"timestamp": "2026-02-05 18:00", "side": "BUY", "price": 95.54480302746553, "size": 1.231971868442744, "pnl": -18.59929845359091}, {"timestamp": "2026-02-05 19:00", "side": "BUY", "price": 95.98705107635817, "size": 1.297688807130712, "pnl": -14.195722981617852}, {"timestamp": "2026-02-05 20:00", "side": "BUY", "price": 107.50715808327517, "size": 1.3337747349095996, "pnl": 5.477279988860456}, {"timestamp": "2026-02-05 21:00", "side": "BUY", "price": 91.69261843304025, "size": 0.4882889427337308, "pnl": 6.525869433448978}, {"timestamp": "2026-02-05 22:00", "side": "SELL", "price": 107.15472411438327, "size": 1.3831939378389466, "pnl": 1.0726861357244815}, {"timestamp": "2026-02-05 23:00", "side": "BUY", "price": 101.05952818186258, "size": 1.3762969997278192, "pnl": 17.895165974115123}, {"timestamp": "2026-02-05 00:00", "side": "SELL", "price": 107.29141427826335, "size": 0.8351593998395814, "pnl": 15.714747835048492}, {"timestamp": "2026-02-05 01:00", "side": "SELL", "price": 99.65857815798581, "size": 1.4450508556131851, "pnl": -14.591671521166182}];
+        
+        // Render equity chart
+        const chartEl = document.getElementById('equity-chart');
+        if (equityCurve.length > 0) {
+            const min = Math.min(...equityCurve);
+            const max = Math.max(...equityCurve);
+            const range = max - min || 1;
+            
+            equityCurve.forEach((val, i) => {
+                const bar = document.createElement('div');
+                bar.className = 'chart-bar';
+                const height = ((val - min) / range) * 250 + 20;
+                bar.style.height = height + 'px';
+                bar.title = '$' + val.toFixed(2);
+                chartEl.appendChild(bar);
+            });
+        }
+        
+        // Render trades table
+        const tableEl = document.getElementById('trades-table');
+        trades.forEach(trade => {
+            const row = document.createElement('tr');
+            const pnl = trade.pnl || 0;
+            const pnlClass = pnl >= 0 ? 'positive' : 'negative';
+            const sideClass = trade.side === 'BUY' ? 'badge-buy' : 'badge-sell';
+            
+            row.innerHTML = `
+                <td>${trade.timestamp || '-'}</td>
+                <td><span class="badge ${sideClass}">${trade.side}</span></td>
+                <td>${trade.price ? '$' + trade.price.toFixed(4) : '-'}</td>
+                <td>${trade.size ? trade.size.toFixed(4) : '-'}</td>
+                <td class="${pnlClass}">${pnl >= 0 ? '+' : ''}${pnl.toFixed(2)}</td>
+            `;
+            tableEl.appendChild(row);
+        });
+    </script>
+</body>
+</html>
