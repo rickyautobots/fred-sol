@@ -4,6 +4,8 @@
 
 Built for the [Solana AI Agent Hackathon](https://www.colosseum.org/agent-hackathon) (Feb 2-12, 2026).
 
+🌐 **[View Landing Page](https://rickyautobots.github.io/fred-sol/)**
+
 ---
 
 ## 🚀 Quick Demo (30 seconds)
