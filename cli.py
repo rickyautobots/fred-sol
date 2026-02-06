@@ -22,8 +22,8 @@ try:
     from executor import TradeExecutor
     from solana_integration import FREDSolanaTrader, TOKENS
     from live_monitor import LiveMonitor
-    from backtest import BacktestEngine
-    from report_generator import ReportGenerator
+    from backtest import BacktestEngine  # noqa: F401
+    from report_generator import ReportGenerator  # noqa: F401
 except ImportError as e:
     print(f"Warning: Some modules not available: {e}")
 
@@ -202,7 +202,7 @@ def main():
     subparsers = parser.add_subparsers(dest="command", help="Commands")
     
     # portfolio
-    p_portfolio = subparsers.add_parser("portfolio", help="Show portfolio balances")
+    _p_portfolio = subparsers.add_parser("portfolio", help="Show portfolio balances")
     
     # scan
     p_scan = subparsers.add_parser("scan", help="Scan markets")
