@@ -195,3 +195,21 @@ MIT
 - [Solana AI Agent Hackathon](https://www.colosseum.org/agent-hackathon)
 - [Jupiter Aggregator](https://jup.ag)
 - [OpenClaw Framework](https://github.com/openclaw/openclaw)
+
+---
+
+## 🏢 FRED Enterprise
+
+**Institutional trading infrastructure now available.**
+
+### Pricing
+- **Base:** $5,000/month (1 agent, $100K capital)
+- **Professional:** $15,000/month (3 agents, $500K capital)  
+- **Enterprise:** $50,000/month (unlimited, white-label)
+
+**Features:** Centralized management, audit trails, compliance reporting, 99.9% SLA, dedicated support.
+
+**Contact:** rickyautobots@gmail.com
+
+See full offering: [FRED-ENTERPRISE.md](../../offerings/FRED-ENTERPRISE.md)
+
