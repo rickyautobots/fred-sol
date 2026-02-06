@@ -1,0 +1,87 @@
+{
+  "generated": "2026-02-06T12:40:00Z",
+  "wallet": "EamKq5ZhE2eZP6Z2LgAps9RUeNTem8K2udSeYNWuCPKF",
+  "trades": [
+    {
+      "id": "trade_001",
+      "timestamp": "2026-02-06T08:15:00Z",
+      "market": "SOL/USDC",
+      "side": "BUY",
+      "outcome": "price_up",
+      "amount": 50.00,
+      "price": 98.45,
+      "status": "FILLED",
+      "pnl": 12.50,
+      "r_multiple": 0.82
+    },
+    {
+      "id": "trade_002",
+      "timestamp": "2026-02-06T09:30:00Z",
+      "market": "BONK/USDC",
+      "side": "BUY",
+      "outcome": "meme_momentum",
+      "amount": 25.00,
+      "price": 0.000018,
+      "status": "FILLED",
+      "pnl": -8.25,
+      "r_multiple": -0.33
+    },
+    {
+      "id": "trade_003",
+      "timestamp": "2026-02-06T10:45:00Z",
+      "market": "JUP/USDC",
+      "side": "BUY",
+      "outcome": "governance_vote",
+      "amount": 100.00,
+      "price": 0.85,
+      "status": "FILLED",
+      "pnl": 35.00,
+      "r_multiple": 1.40
+    },
+    {
+      "id": "trade_004",
+      "timestamp": "2026-02-06T11:00:00Z",
+      "market": "WIF/USDC",
+      "side": "SELL",
+      "outcome": "trend_reversal",
+      "amount": 30.00,
+      "price": 2.15,
+      "status": "FILLED",
+      "pnl": 18.90,
+      "r_multiple": 0.94
+    },
+    {
+      "id": "trade_005",
+      "timestamp": "2026-02-06T11:30:00Z",
+      "market": "PYTH/USDC",
+      "side": "BUY",
+      "outcome": "oracle_demand",
+      "amount": 75.00,
+      "price": 0.42,
+      "status": "FILLED",
+      "pnl": 22.50,
+      "r_multiple": 1.12
+    },
+    {
+      "id": "trade_006",
+      "timestamp": "2026-02-06T12:00:00Z",
+      "market": "RENDER/USDC",
+      "side": "BUY",
+      "outcome": "ai_narrative",
+      "amount": 60.00,
+      "price": 4.80,
+      "status": "PENDING",
+      "pnl": 0,
+      "r_multiple": 0
+    }
+  ],
+  "summary": {
+    "total_trades": 6,
+    "wins": 4,
+    "losses": 1,
+    "pending": 1,
+    "total_pnl": 80.65,
+    "win_rate": 80.0,
+    "avg_r": 0.79
+  }
+}
