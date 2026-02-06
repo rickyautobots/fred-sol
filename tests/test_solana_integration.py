@@ -196,7 +196,7 @@ class TestTokenConstants:
         required = ["SOL", "USDC", "USDT", "BONK", "JUP"]
         for token in required:
             assert token in TOKENS
-            assert len(TOKENS[token]) == 44  # Solana pubkey length
+            assert 32 <= len(TOKENS[token]) <= 44  # Solana pubkey length varies
     
     def test_lamports_constant(self):
         """Verify lamports conversion"""

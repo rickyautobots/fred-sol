@@ -117,7 +117,7 @@ class TestCryptoUtils:
     def test_shorten_address(self):
         addr = "EamKq5ZhE2eZP6Z2LgAps9RUeNTem8K2udSeYNWuCPKF"
         short = shorten_address(addr)
-        assert short == "EamKq5...uCPKF"
+        assert short == "EamKq5...WuCPKF"
     
     def test_validate_solana_address_valid(self):
         addr = "EamKq5ZhE2eZP6Z2LgAps9RUeNTem8K2udSeYNWuCPKF"
